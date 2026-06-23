@@ -9,16 +9,12 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.esme.Handler.HandlerFactory;
+
 public class SimpleHttpServer {
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(8080);
         System.out.println("Server started on port 8080");
-        Map<String, BusinessLogic> handlers = new HashMap<>();
-        handlers.put("/", new RootHandler());
-        handlers.put("/hello", new HelloHandler());
-        handlers.put("/user", new UserHandler());
-        handlers.put("/dish", new DishHandler());
-        handlers.put("/order", new OrdersHandler());
         while (true) {
             Socket clientSocket = serverSocket.accept();
             BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -36,11 +32,12 @@ public class SimpleHttpServer {
             HttpRequest httpRequest= new HttpRequest(parts[0], parts[1], parts[2], headers);
 
             //println -> logforj
-            //封装httpRequest, httpResponse
+            //弄成注解
 
             // STEP 3: write the response
             HttpResponse httpResponse = new HttpResponse();
-            handlers.getOrDefault(httpRequest.getPath(), new NotFoundHandler()).service(httpRequest, httpResponse);
+            BusinessLogic bl= HandlerFactory.getHandler(httpRequest.getPath());
+            bl.service(httpRequest, httpResponse);
             writer.println(httpResponse.getStatus());
             writer.println(httpResponse.getContentType());
             writer.println("Content-Length: " + httpResponse.getMessage().length());

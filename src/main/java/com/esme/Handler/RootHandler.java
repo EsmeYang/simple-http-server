@@ -1,5 +1,10 @@
-package com.esme.httpserver;
+package com.esme.Handler;
 
+import com.esme.httpserver.BusinessLogic;
+import com.esme.httpserver.HttpRequest;
+import com.esme.httpserver.HttpResponse;
+import com.esme.Handler.WebHandler;
+@WebHandler("/")
 public class RootHandler extends BusinessLogic{
 
     @Override

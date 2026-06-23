@@ -1,4 +1,8 @@
-package com.esme.httpserver;
+package com.esme.Handler;
+
+import com.esme.httpserver.BusinessLogic;
+import com.esme.httpserver.HttpRequest;
+import com.esme.httpserver.HttpResponse;
 
 public class NotFoundHandler extends BusinessLogic{
     @Override

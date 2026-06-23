@@ -1,5 +1,10 @@
-package com.esme.httpserver;
+package com.esme.Handler;
 
+import com.esme.httpserver.BusinessLogic;
+import com.esme.httpserver.HttpRequest;
+import com.esme.httpserver.HttpResponse;
+import com.esme.Handler.WebHandler;
+@WebHandler("/dish")
 public class DishHandler extends BusinessLogic{
     @Override
     public void service(HttpRequest request, HttpResponse response) {
