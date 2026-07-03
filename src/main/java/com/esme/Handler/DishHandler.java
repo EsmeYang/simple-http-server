@@ -1,12 +1,11 @@
 package com.esme.Handler;
 
-import com.esme.httpserver.BusinessLogic;
 import com.esme.httpserver.HttpRequest;
 import com.esme.httpserver.HttpResponse;
-import com.esme.Handler.WebHandler;
+
 @WebHandler("/dish")
-public class DishHandler extends BusinessLogic{
-    @Override
+public class DishHandler{
+    @ServiceMethod
     public void service(HttpRequest request, HttpResponse response) {
         response.setStatus("HTTP/1.1 200 OK");
         response.setContentType("Content-Type: application/json");

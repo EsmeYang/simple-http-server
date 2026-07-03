@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 import com.esme.Handler.HandlerFactory;
 
 public class SimpleHttpServer {
-    public static void main(String[] args) throws IOException {
+        public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(8080);
         System.out.println("Server started on port 8080");
         ThreadPoolExecutor threadPool =  new ThreadPoolExecutor(
@@ -25,13 +25,13 @@ public class SimpleHttpServer {
             TimeUnit.MILLISECONDS, // time unit
             new LinkedBlockingQueue<>() // queue
         );
+
         //控制线程数
         while (true) {
             Socket clientSocket = serverSocket.accept();//多线程
             threadPool.submit(() -> {
                 try {
                     System.out.println("线程启动: " + Thread.currentThread().getName());
-                    Thread.sleep(5000); // sleep 5 seconds
                     BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                     PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true);
                     // STEP 1: read the request line
@@ -47,8 +47,9 @@ public class SimpleHttpServer {
                     HttpRequest httpRequest= new HttpRequest(parts[0], parts[1], parts[2], headers);
                     // STEP 3: write the response
                     HttpResponse httpResponse = new HttpResponse();
-                    BusinessLogic bl= HandlerFactory.getHandler(httpRequest.getPath());
-                    bl.service(httpRequest, httpResponse);
+
+                    // 2. Loop through all methods, find the one with @ServiceMethod
+                    HandlerFactory.invoke(httpRequest, httpResponse);
                     writer.println(httpResponse.getStatus());
                     writer.println(httpResponse.getContentType());
                     writer.println("Content-Length: " + httpResponse.getMessage().length());
@@ -58,7 +59,7 @@ public class SimpleHttpServer {
                     // STEP 4: close the connection
 
                     clientSocket.close();
-                    } catch (IOException | InterruptedException e) {
+                    } catch (IOException e) {
                         throw new RuntimeException(e);
                 }
             });
