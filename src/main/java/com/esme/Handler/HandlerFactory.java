@@ -36,12 +36,15 @@ public class HandlerFactory {
         try {
             Object handler = getHandler(request.getPath());
             for (Method method : handler.getClass().getDeclaredMethods()) {
-                if (method.isAnnotationPresent(ServiceMethod.class)) {
+                ServiceMethod annotation = method.getAnnotation(ServiceMethod.class);
+                if (annotation != null && annotation.method().name().equals(request.getMethod())) {
                     method.invoke(handler, request, response);
                     return;
                 }
             }
-            throw new RuntimeException("No service method found for handler: " + handler.getClass().getName());
+            response.setStatus("HTTP/1.1 405 Method Not Allowed");
+            response.setContentType("Content-Type: text/plain");
+            response.setMessage("405 Method Not Allowed");
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("Failed to invoke handler method", e);
         }
