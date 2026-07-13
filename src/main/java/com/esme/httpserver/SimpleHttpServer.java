@@ -25,6 +25,8 @@ public class SimpleHttpServer {
             TimeUnit.MILLISECONDS, // time unit
             new LinkedBlockingQueue<>() // queue
         );
+        //自己实现thread pool
+
 
         //控制线程数
         while (true) {
