@@ -8,9 +8,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import com.esme.Handler.HandlerFactory;
 
@@ -18,15 +15,15 @@ public class SimpleHttpServer {
         public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(8080);
         System.out.println("Server started on port 8080");
-        ThreadPoolExecutor threadPool =  new ThreadPoolExecutor(
+        /**ThreadPoolExecutor threadPool =  new ThreadPoolExecutor(
             3,                    // corePoolSize
             3,                    // maximumPoolSize
             0L,                    // keepAliveTime
             TimeUnit.MILLISECONDS, // time unit
             new LinkedBlockingQueue<>() // queue
-        );
+        );**/
         //自己实现thread pool
-
+        MyThreadPool threadPool = new MyThreadPool(3);
 
         //控制线程数
         while (true) {
@@ -47,6 +44,17 @@ public class SimpleHttpServer {
                         headers.put(headerParts[0], headerParts[1]);
                     }
                     HttpRequest httpRequest= new HttpRequest(parts[0], parts[1], parts[2], headers);
+
+                    String body;
+                    if (headers.containsKey("Content-Length")) {
+                        int contentLength = Integer.parseInt(headers.get("Content-Length"));
+                        char[] bodyChars = new char[contentLength];
+                        reader.read(bodyChars, 0, contentLength);
+                        body = new String(bodyChars);
+                    } else {
+                        body = "";
+                    }
+                    httpRequest.setBody(body);
                     // STEP 3: write the response
                     HttpResponse httpResponse = new HttpResponse();
 
