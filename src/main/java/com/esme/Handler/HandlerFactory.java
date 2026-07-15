@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class HandlerFactory {
     private static final Map<String, Object> handlers = new HashMap<>();
+    private static final ObjectMapper mapper = new ObjectMapper();
     static {
         Reflections rf = new Reflections("com.esme.Handler");
         Set<Class<?>> handlerClasses = rf.getTypesAnnotatedWith(WebHandler.class);
@@ -38,6 +39,7 @@ public class HandlerFactory {
     public static void invoke(HttpRequest request, HttpResponse response) throws JsonMappingException, JsonProcessingException {
         try {
             Object handler = getHandler(request.getPath());
+            
             for (Method method : handler.getClass().getDeclaredMethods()) {
                 ServiceMethod annotation = method.getAnnotation(ServiceMethod.class);
                 if (annotation != null && annotation.method().name().equals(request.getMethod())) {
@@ -47,7 +49,6 @@ public class HandlerFactory {
                         method.invoke(handler, request, response);
                     } else {
                         String body = request.getBody();
-                        ObjectMapper mapper = new ObjectMapper();
                         Object requestObj = mapper.readValue(body, paramTypes[0]);
                         Object result = method.invoke(handler, requestObj);  // 拿到返回值
                         String json = mapper.writeValueAsString(result);      // 序列化成 JSON
