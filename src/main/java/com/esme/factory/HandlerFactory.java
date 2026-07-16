@@ -1,4 +1,4 @@
-package com.esme.Handler;
+package com.esme.factory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -8,11 +8,19 @@ import java.util.Set;
 
 import org.reflections.Reflections;
 
+import com.esme.Handler.NotFoundHandler;
+import com.esme.annotation.ServiceMethod;
+import com.esme.annotation.WebHandler;
 import com.esme.httpserver.HttpRequest;
 import com.esme.httpserver.HttpResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+//把公共部分变成公共的组建，便于其他人调用
+//了解synchronized和信号量（互斥体）的原理
+//总结近期内容
+//对象里面的多态
 
 public class HandlerFactory {
     private static final Map<String, Object> handlers = new HashMap<>();

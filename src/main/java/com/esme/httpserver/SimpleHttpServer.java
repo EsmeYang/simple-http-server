@@ -9,12 +9,17 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.esme.Handler.HandlerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.esme.factory.HandlerFactory;
 
 public class SimpleHttpServer {
-        public static void main(String[] args) throws IOException {
+    private static final Logger logger = LogManager.getLogger(SimpleHttpServer.class);
+
+    public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(8080);
-        System.out.println("Server started on port 8080");
+        logger.info("Server started on port 8080");
         /**ThreadPoolExecutor threadPool =  new ThreadPoolExecutor(
             3,                    // corePoolSize
             3,                    // maximumPoolSize
@@ -30,7 +35,7 @@ public class SimpleHttpServer {
             Socket clientSocket = serverSocket.accept();//多线程
             threadPool.submit(() -> {
                 try {
-                    System.out.println("线程启动: " + Thread.currentThread().getName());
+                    logger.info("线程启动: {}", Thread.currentThread().getName());
                     BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                     PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true);
                     // STEP 1: read the request line

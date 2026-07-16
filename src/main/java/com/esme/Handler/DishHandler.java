@@ -1,10 +1,16 @@
 package com.esme.Handler;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.esme.annotation.ServiceMethod;
+import com.esme.annotation.WebHandler;
 import com.esme.httpserver.HttpRequest;
 import com.esme.httpserver.HttpResponse;
 
 @WebHandler("/dish")
 public class DishHandler{
+    private static final Logger logger = LogManager.getLogger(DishHandler.class);
     @ServiceMethod
     public void service(HttpRequest request, HttpResponse response) {
         response.setStatus("HTTP/1.1 200 OK");
@@ -13,13 +19,13 @@ public class DishHandler{
     }
     @ServiceMethod(method = HttpMethod.POST)
     public Dish addDish(Dish dish){
-        System.out.println("Received dish: " + dish.getName() + ", " + dish.getPrice());
+        logger.info("Received dish: {}, {}", dish.getName(), dish.getPrice());
         return dish;
     }
 
     @ServiceMethod(method = HttpMethod.DELETE)
     public Dish deleteDish(Dish dish) {
-        System.out.println("Deleting dish: " + dish.getId());
+        logger.info("Deleting dish: {}, {}", dish.getId(), dish.getName());
         return dish;
     }
 }
