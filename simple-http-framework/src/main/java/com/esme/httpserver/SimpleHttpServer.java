@@ -18,6 +18,7 @@ public class SimpleHttpServer {
     private static final Logger logger = LogManager.getLogger(SimpleHttpServer.class);
 
     public static void main(String[] args) throws IOException {
+        HandlerFactory.init("com.esme.Handler");  // 由业务层告诉框架，去哪扫描
         ServerSocket serverSocket = new ServerSocket(8080);
         logger.info("Server started on port 8080");
         /**ThreadPoolExecutor threadPool =  new ThreadPoolExecutor(

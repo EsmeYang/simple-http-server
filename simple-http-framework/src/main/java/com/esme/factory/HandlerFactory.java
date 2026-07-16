@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.reflections.Reflections;
 
-import com.esme.Handler.NotFoundHandler;
 import com.esme.annotation.ServiceMethod;
 import com.esme.annotation.WebHandler;
 import com.esme.httpserver.HttpRequest;
@@ -25,8 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class HandlerFactory {
     private static final Map<String, Object> handlers = new HashMap<>();
     private static final ObjectMapper mapper = new ObjectMapper();
-    static {
-        Reflections rf = new Reflections("com.esme.Handler");
+    public static void init(String packageName) {
+        Reflections rf = new Reflections(packageName);
         Set<Class<?>> handlerClasses = rf.getTypesAnnotatedWith(WebHandler.class);
 
         for(Class<?> clazz: handlerClasses){
