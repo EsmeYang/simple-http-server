@@ -13,27 +13,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.esme.factory.HandlerFactory;
-
 public class SimpleHttpServer {
     private static final Logger logger = LogManager.getLogger(SimpleHttpServer.class);
 
-    public static void main(String[] args) throws IOException {
-        HandlerFactory.init("com.esme.Handler");  // 由业务层告诉框架，去哪扫描
-        ServerSocket serverSocket = new ServerSocket(8080);
-        logger.info("Server started on port 8080");
-        /**ThreadPoolExecutor threadPool =  new ThreadPoolExecutor(
-            3,                    // corePoolSize
-            3,                    // maximumPoolSize
-            0L,                    // keepAliveTime
-            TimeUnit.MILLISECONDS, // time unit
-            new LinkedBlockingQueue<>() // queue
-        );**/
-        //自己实现thread pool
+    // 新增：给外部调用的入口方法
+    public static void run(int port, String packageName) throws IOException {
+        HandlerFactory.init(packageName);
+        ServerSocket serverSocket = new ServerSocket(port);
+        logger.info("Server started on port {}", port);
         MyThreadPool threadPool = new MyThreadPool(3);
 
-        //控制线程数
         while (true) {
-            Socket clientSocket = serverSocket.accept();//多线程
+            Socket clientSocket = serverSocket.accept();
             threadPool.submit(() -> {
                 try {
                     logger.info("线程启动: {}", Thread.currentThread().getName());
@@ -80,6 +71,9 @@ public class SimpleHttpServer {
                 }
             });
         }
-        
+    }
+
+    public static void main(String[] args) throws IOException {
+        run(8080, "com.esme.Handler");
     }
 }
