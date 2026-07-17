@@ -46,7 +46,14 @@ public class SimpleHttpServer {
                     if (headers.containsKey("Content-Length")) {
                         int contentLength = Integer.parseInt(headers.get("Content-Length"));
                         char[] bodyChars = new char[contentLength];
-                        reader.read(bodyChars, 0, contentLength);
+                        int totalRead = 0;
+                        while (totalRead < contentLength) {
+                            int readChars = reader.read(bodyChars, totalRead, contentLength - totalRead);
+                            if (readChars == -1) {
+                                throw new IOException("Failed to read request body"); // 试着填这里，抛出什么异常，带什么提示信息
+                            }
+                            totalRead += readChars;
+                        }
                         body = new String(bodyChars);
                     } else {
                         body = "";
