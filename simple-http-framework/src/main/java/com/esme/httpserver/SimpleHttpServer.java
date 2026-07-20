@@ -26,6 +26,7 @@ public class SimpleHttpServer {
         while (true) {
             Socket clientSocket = serverSocket.accept();
             threadPool.submit(() -> {
+                long startTime = System.nanoTime();  // 记录开始时间
                 try {
                     logger.info("线程启动: {}", Thread.currentThread().getName());
                     BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -72,10 +73,19 @@ public class SimpleHttpServer {
                     writer.flush();
                     // STEP 4: close the connection
 
+                    Runtime runtime = Runtime.getRuntime();
+                    logger.info("Free memory: {} MB", runtime.freeMemory()/1024/1024);
+                    logger.info("Total memory: {} MB", runtime.totalMemory()/1024/1024);
+                    logger.info("Max memory: {} MB", runtime.maxMemory()/1024/1024);
+                    logger.info("Used memory: {} MB", (runtime.totalMemory() - runtime.freeMemory())/1024/1024);
+                    logger.info("线程结束: {}", Thread.currentThread().getName());
                     clientSocket.close();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                 }
+                long endTime = System.nanoTime();  // 记录结束时间
+                long duration = (endTime - startTime) / 1_000_000;  // 转换为毫秒
+                logger.info("Request processed in {} ms", duration);
             });
         }
     }
