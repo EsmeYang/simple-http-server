@@ -2,9 +2,9 @@ package com.esme.Handler;
 
 import java.util.List;
 
-public interface Store<T> {
+public interface Store<T, ID> {
     T save(T entity);
-    T findById(int id);
+    T findById(ID id);
     List<T> findAll();
-    boolean deleteById(int id);
+    boolean deleteById(ID id);
 }

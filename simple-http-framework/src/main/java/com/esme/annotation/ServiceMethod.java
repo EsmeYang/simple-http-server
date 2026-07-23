@@ -9,4 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ServiceMethod {
     HttpMethod method() default HttpMethod.GET;
+    String path() default "";
 }

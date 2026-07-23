@@ -91,6 +91,10 @@ public class SimpleHttpServer {
     }
 
     public static void main(String[] args) throws IOException {
+        String[] parts = "/user".split("/");
+        for (String p : parts) {
+            System.out.println("[" + p + "]");
+        }
         run(8080, "com.esme.Handler");
     }
 }

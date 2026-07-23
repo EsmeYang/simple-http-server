@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class DishStore implements Store<Dish> {
+public class DishStore implements Store<Dish, Integer> {
     Map<Integer, Dish> dishMap = new ConcurrentHashMap<>(); // Ensure thread safety
     @Override
     public Dish save(Dish entity) {
@@ -19,7 +19,7 @@ public class DishStore implements Store<Dish> {
     }
 
     @Override
-    public Dish findById(int id) {
+    public Dish findById(Integer id) {
         // Implement the logic to find a dish by ID from the database or in-memory store
         return dishMap.get(id); // Return the found dish or null if not found
     }
@@ -31,7 +31,7 @@ public class DishStore implements Store<Dish> {
     }
 
     @Override
-    public boolean deleteById(int id) {
+    public boolean deleteById(Integer id) {
         // Implement the logic to delete a dish by ID from the database or in-memory store
         return dishMap.remove(id) != null; // Return true if deletion was successful, false otherwise
     }

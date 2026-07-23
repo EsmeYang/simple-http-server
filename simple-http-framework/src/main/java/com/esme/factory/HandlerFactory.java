@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
 
 import com.esme.annotation.ServiceMethod;
@@ -22,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class HandlerFactory {
     private static final Map<String, Object> handlers = new HashMap<>();
     private static final ObjectMapper mapper = new ObjectMapper();
+    private static final Logger logger = LogManager.getLogger(HandlerFactory.class);
     public static void init(String packageName) {
         Reflections rf = new Reflections(packageName);
         Set<Class<?>> handlerClasses = rf.getTypesAnnotatedWith(WebHandler.class);
@@ -29,7 +32,7 @@ public class HandlerFactory {
         for(Class<?> clazz: handlerClasses){
             try {
                 WebHandler annotation = clazz.getAnnotation(WebHandler.class);
-                String path = annotation.value();
+                String path = annotation.value();// /user
                 handlers.put(path, clazz.getDeclaredConstructor().newInstance());
             } catch (Exception ex) {
                 throw new RuntimeException("Failed to register handler: " + clazz.getName(), ex);
@@ -43,16 +46,37 @@ public class HandlerFactory {
 
     public static void invoke(HttpRequest request, HttpResponse response) throws JsonMappingException, JsonProcessingException {
         try {
-            Object handler = getHandler(request.getPath());
-            
+            String[] pathSegments = request.getPath().split("/");
+            logger.info("Path segments: {}", (Object) pathSegments);
+            Object handler = handlers.get("/" + pathSegments[1]);
             for (Method method : handler.getClass().getDeclaredMethods()) {
                 ServiceMethod annotation = method.getAnnotation(ServiceMethod.class);
                 if (annotation != null && annotation.method().name().equals(request.getMethod())) {
                     //把request通过映射成对象传入方法中
+                    String path = annotation.path();
                     Class<?>[] paramTypes = method.getParameterTypes();
+                    if (!path.isEmpty()) {
+                        if (pathSegments.length > 2 && !pathSegments[2].isEmpty()) {
+                            String JsonValue;
+                            if(paramTypes[0] == String.class) {
+                                JsonValue = "\"" + pathSegments[2] + "\""; // Wrap the string in quotes to make it valid JSON
+                            } else {
+                                JsonValue = pathSegments[2];
+                            }
+                            Object requestObj = mapper.readValue(JsonValue, paramTypes[0]);
+                            Object result = method.invoke(handler,requestObj);
+                            String json = mapper.writeValueAsString(result);
+                            response.setStatus("HTTP/1.1 200 OK");
+                            response.setContentType("Content-Type: application/json");
+                            response.setMessage(json);
+                            return;
+                        } else {
+                            continue; // Skip this method if the path doesn't match
+                        }
+                    }
                     if (paramTypes.length > 0 && paramTypes[0] == HttpRequest.class) {
                         method.invoke(handler, request, response);
-                    } else {
+                    } else {                                                            //方法里传入的是int/String/...类型
                         String body = request.getBody();
                         Object requestObj = mapper.readValue(body, paramTypes[0]);
                         Object result = method.invoke(handler, requestObj);  // 拿到返回值

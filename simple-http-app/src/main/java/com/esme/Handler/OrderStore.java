@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class OrderStore implements Store<Order> {
+public class OrderStore implements Store<Order, Integer> {
     Map<Integer, Order> orderMap = new ConcurrentHashMap<>(); // Ensure thread safety
     @Override
     public Order save(Order entity) {
@@ -20,7 +20,7 @@ public class OrderStore implements Store<Order> {
     }
 
     @Override
-    public Order findById(int id) {
+    public Order findById(Integer id) {
         // Implement the logic to find an order by ID from the database or in-memory store
         return orderMap.get(id);
     }
@@ -32,7 +32,7 @@ public class OrderStore implements Store<Order> {
     }
 
     @Override
-    public boolean deleteById(int id) {
+    public boolean deleteById(Integer id) {
         // Implement the logic to delete an order by ID from the database or in-memory store
         return orderMap.remove(id) != null;
     }

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class UserStore implements Store<User> {
+public class UserStore implements Store<User, Integer> {
     Map<Integer, User> userMap = new ConcurrentHashMap<>();//保证线程安全
     @Override
     public User save(User entity) {
@@ -20,7 +20,7 @@ public class UserStore implements Store<User> {
     }
 
     @Override
-    public User findById(int id) {
+    public User findById(Integer id) {
         // Implement the logic to find a user by ID from the database or in-memory store
         return userMap.get(id); // Return the found user or null if not found
     }
@@ -32,7 +32,7 @@ public class UserStore implements Store<User> {
     }
 
     @Override
-    public boolean deleteById(int id) {
+    public boolean deleteById(Integer id) {
         // Implement the logic to delete a user by ID from the database or in-memory store
         return userMap.remove(id) != null; // Return true if deletion was successful, false otherwise
     }
